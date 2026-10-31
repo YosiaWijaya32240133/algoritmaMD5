@@ -1,0 +1,695 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MD5 Cryptography Lab</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 25px;
+    font-family: Arial, sans-serif;
+    background: #080f20;
+    color: #e2e8f0;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+header h1 {
+    color: #38bdf8;
+    font-size: 32px;
+}
+
+header p {
+    color: #94a3b8;
+}
+
+.card {
+    background: #111c30;
+    border: 1px solid #293951;
+    padding: 22px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    color: #38bdf8;
+    font-size: 19px;
+    margin-top: 0;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+textarea {
+    width: 100%;
+    height: 110px;
+    padding: 14px;
+    background: #080f20;
+    border: 1px solid #475569;
+    color: white;
+    border-radius: 8px;
+    resize: vertical;
+    font-size: 15px;
+}
+
+button {
+    border: none;
+    padding: 12px 18px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 12px;
+}
+
+.generate {
+    background: #0284c7;
+    color: white;
+}
+
+.reset {
+    background: #334155;
+    color: white;
+    margin-left: 5px;
+}
+
+.copy {
+    background: #0f766e;
+    color: white;
+}
+
+button:hover {
+    opacity: 0.85;
+}
+
+.result {
+    background: #081b20;
+    border: 1px solid #0e7490;
+    padding: 17px;
+    border-radius: 8px;
+}
+
+.hash {
+    color: #4ade80;
+    font-family: monospace;
+    font-size: 19px;
+    word-break: break-all;
+}
+
+pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    background: #080f20;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #293951;
+    color: #cbd5e1;
+    font-family: Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    max-height: 350px;
+    overflow: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+th, td {
+    border: 1px solid #334155;
+    padding: 11px;
+    text-align: left;
+}
+
+th {
+    background: #1e293b;
+    color: #38bdf8;
+}
+
+td {
+    overflow-wrap: anywhere;
+}
+
+.step {
+    border-left: 3px solid #0284c7;
+    padding-left: 15px;
+    margin-bottom: 22px;
+}
+
+.note {
+    color: #94a3b8;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.status {
+    color: #4ade80;
+    font-size: 13px;
+    margin-top: 10px;
+}
+
+footer {
+    text-align: center;
+    color: #64748b;
+    padding: 20px;
+    font-size: 12px;
+}
+
+@media(max-width:600px) {
+    body {
+        padding: 12px;
+    }
+
+    header h1 {
+        font-size: 25px;
+    }
+
+    .card {
+        padding: 15px;
+    }
+
+    table {
+        font-size: 12px;
+    }
+
+    th, td {
+        padding: 7px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+    <h1>MD5 CRYPTOGRAPHY LAB</h1>
+    <p>Simulasi Perhitungan Algoritma Message Digest 5</p>
+</header>
+
+<!-- INPUT -->
+<div class="card">
+
+    <h2>01. Input Pesan</h2>
+
+    <label>Masukkan pesan yang ingin diproses:</label>
+
+    <textarea id="inputText">abc</textarea>
+
+    <button class="generate" onclick="generateMD5()">
+        GENERATE MD5
+    </button>
+
+    <button class="reset" onclick="resetApp()">
+        RESET
+    </button>
+
+    <div id="status" class="status"></div>
+
+</div>
+
+<!-- RESULT -->
+<div class="card">
+
+    <h2>02. Hasil Message Digest</h2>
+
+    <div class="result">
+
+        <p>Pesan asli:</p>
+        <strong id="original">abc</strong>
+
+        <p>Hasil MD5:</p>
+
+        <div id="hashResult" class="hash">
+            900150983cd24fb0d6963f7d28e17f72
+        </div>
+
+        <p class="note">
+            Panjang hash: 128 bit / 32 karakter hexadecimal.
+        </p>
+
+        <button class="copy" onclick="copyHash()">
+            COPY HASH
+        </button>
+
+    </div>
+
+</div>
+
+<!-- ASCII -->
+<div class="card">
+
+    <div class="step">
+        <h2>03. Konversi ASCII ke Biner</h2>
+
+        <p>
+            Setiap karakter diubah menjadi kode ASCII
+            dan direpresentasikan dalam 8 bit biner.
+        </p>
+    </div>
+
+    <div id="asciiResult"></div>
+
+</div>
+
+<!-- PADDING -->
+<div class="card">
+
+    <div class="step">
+        <h2>04. Penambahan Bit Pengganjal (Padding)</h2>
+
+        <p>
+            MD5 menambahkan bit 1 diikuti bit 0
+            sampai panjang pesan mencapai 448 modulo 512.
+        </p>
+    </div>
+
+    <div id="paddingInfo"></div>
+
+    <pre id="paddingResult"></pre>
+
+</div>
+
+<!-- LENGTH -->
+<div class="card">
+
+    <div class="step">
+        <h2>05. Penambahan Panjang Pesan</h2>
+
+        <p>
+            Menambahkan 64 bit yang menyatakan panjang
+            pesan asli.
+        </p>
+    </div>
+
+    <div id="lengthInfo"></div>
+
+    <pre id="lengthResult"></pre>
+
+</div>
+
+<!-- BLOCK -->
+<div class="card">
+
+    <div class="step">
+        <h2>06. Pengolahan Pesan dalam Blok 512 Bit</h2>
+
+        <p>
+            Pesan dibagi menjadi blok 512 bit,
+            kemudian setiap blok dibagi menjadi
+            16 bagian berukuran 32 bit.
+        </p>
+    </div>
+
+    <div id="blockInfo"></div>
+
+    <div id="blockResult"></div>
+
+</div>
+
+<!-- BUFFER -->
+<div class="card">
+
+    <div class="step">
+        <h2>07. Inisialisasi Buffer MD5</h2>
+
+        <p>
+            MD5 menggunakan empat buffer dengan
+            ukuran masing-masing 32 bit.
+        </p>
+    </div>
+
+    <div id="bufferResult"></div>
+
+</div>
+
+<!-- PROCESS -->
+<div class="card">
+
+    <div class="step">
+        <h2>08. Pengolahan 64 Putaran MD5</h2>
+
+        <p>
+            MD5 menggunakan empat fungsi logika
+            yang diproses dalam empat ronde.
+        </p>
+    </div>
+
+    <div id="roundResult"></div>
+
+    <p class="note">
+        Seluruh 64 putaran dijalankan oleh library CryptoJS.
+        Bagian ini menampilkan struktur dan contoh
+        perhitungan putaran pertama.
+    </p>
+
+</div>
+
+<footer>
+    MD5 Cryptography Lab | Pembelajaran Kriptografi
+</footer>
+
+</div>
+
+<script>
+
+// KONVERSI BILANGAN
+function toBinary(num) {
+    return num.toString(2).padStart(8, "0");
+}
+
+function toHex(num) {
+    return num.toString(16).padStart(8, "0").toUpperCase();
+}
+
+// LITTLE ENDIAN
+function littleEndianHex(hex) {
+    return hex.match(/../g).reverse().join("");
+}
+
+// MEMBENTUK BLOK MD5
+function makeMD5Blocks(bytes) {
+
+    const data = bytes.slice();
+
+    const originalLength = bytes.length * 8;
+
+    // Padding 1 bit
+    data.push(0x80);
+
+    // Padding 0 sampai panjang kongruen 448 mod 512
+    while (data.length % 64 !== 56) {
+        data.push(0);
+    }
+
+    // Panjang pesan 64 bit little endian
+    let low = originalLength >>> 0;
+    let high = Math.floor(originalLength / 4294967296);
+
+    for (let i = 0; i < 4; i++) {
+        data.push((low >>> (i * 8)) & 255);
+    }
+
+    for (let i = 0; i < 4; i++) {
+        data.push((high >>> (i * 8)) & 255);
+    }
+
+    return data;
+}
+
+// PROSES UTAMA
+function generateMD5() {
+
+    const input = document.getElementById("inputText").value;
+
+    if (typeof CryptoJS === "undefined") {
+        alert("Library CryptoJS belum berhasil dimuat. Periksa koneksi internet.");
+        return;
+    }
+
+    const bytes = Array.from(
+        new TextEncoder().encode(input)
+    );
+
+    const originalLength = bytes.length * 8;
+
+    // HASIL HASH
+    const hash = CryptoJS.MD5(input).toString();
+
+    document.getElementById("original").textContent = input || "(Kosong)";
+    document.getElementById("hashResult").textContent = hash;
+
+    document.getElementById("status").textContent =
+        "Berhasil memproses pesan menggunakan MD5.";
+
+    // ASCII
+    let asciiHTML = `
+    <table>
+    <tr>
+        <th>Karakter</th>
+        <th>Desimal / Byte</th>
+        <th>Biner</th>
+    </tr>`;
+
+    bytes.forEach((byte, i) => {
+
+        const char = String.fromCodePoint(
+            ...new TextDecoder().decode(
+                new Uint8Array([byte])
+            ).codePointAt(0).toString(16).split("").map(x => parseInt(x,16))
+        );
+
+        asciiHTML += `
+        <tr>
+            <td>${byte >= 32 && byte <= 126
+                ? String.fromCharCode(byte)
+                : "Byte " + i}</td>
+            <td>${byte}</td>
+            <td>${toBinary(byte)}</td>
+        </tr>`;
+    });
+
+    asciiHTML += "</table>";
+
+    document.getElementById("asciiResult").innerHTML =
+        asciiHTML;
+
+    // PADDING
+    const paddingBits = (448 - ((originalLength + 1) % 512) + 512) % 512;
+
+    const totalPadding = 1 + paddingBits;
+
+    document.getElementById("paddingInfo").innerHTML = `
+        <p>Panjang pesan awal: <b>${originalLength} bit</b></p>
+        <p>Bit pertama: <b>1</b></p>
+        <p>Bit nol: <b>${paddingBits} bit</b></p>
+        <p>Total padding: <b>${totalPadding} bit</b></p>
+        <p>Rumus: ${originalLength} + ${totalPadding} = ${originalLength + totalPadding} bit</p>
+    `;
+
+    let paddingText = "";
+
+    bytes.forEach((b, i) => {
+        paddingText += toBinary(b);
+
+        if ((i + 1) % 8 === 0) {
+            paddingText += "\n";
+        } else {
+            paddingText += " ";
+        }
+    });
+
+    paddingText += "\n\nPadding:\n1";
+
+    paddingText += "0".repeat(paddingBits);
+
+    document.getElementById("paddingResult").textContent =
+        paddingText;
+
+    // PANJANG PESAN
+    const blocks = makeMD5Blocks(bytes);
+
+    const totalBits = blocks.length * 8;
+
+    const lengthBytes = blocks.slice(-8);
+
+    const lengthHex = lengthBytes.map(
+        b => b.toString(16).padStart(2, "0")
+    ).join(" ").toUpperCase();
+
+    document.getElementById("lengthInfo").innerHTML = `
+        <p>Panjang pesan asli: <b>${originalLength} bit</b></p>
+        <p>Panjang data setelah padding: <b>${blocks.length - 8} byte</b></p>
+        <p>Penambahan panjang pesan: <b>64 bit</b></p>
+        <p>Total panjang akhir: <b>${totalBits} bit</b></p>
+        <p>Jumlah blok: <b>${blocks.length / 64}</b></p>
+    `;
+
+    document.getElementById("lengthResult").textContent =
+        "64 bit little-endian:\n" + lengthHex;
+
+    // BLOK 512 BIT
+    let blockHTML = `
+    <table>
+    <tr>
+        <th>Blok</th>
+        <th>Bagian</th>
+        <th>Nilai HEX</th>
+    </tr>`;
+
+    const totalBlocks = blocks.length / 64;
+
+    for (let block = 0; block < totalBlocks; block++) {
+
+        for (let i = 0; i < 16; i++) {
+
+            const start = block * 64 + i * 4;
+
+            const word = blocks.slice(start, start + 4);
+
+            const hex = word.map(
+                b => b.toString(16).padStart(2, "0")
+            ).reverse().join("").toUpperCase();
+
+            blockHTML += `
+            <tr>
+                <td>${block + 1}</td>
+                <td>M[${i}]</td>
+                <td>${hex}</td>
+            </tr>`;
+        }
+    }
+
+    blockHTML += "</table>";
+
+    document.getElementById("blockInfo").innerHTML = `
+        <p>Total blok: <b>${totalBlocks}</b></p>
+        <p>Setiap blok: <b>512 bit</b></p>
+        <p>Setiap blok dibagi menjadi: <b>16 bagian × 32 bit</b></p>
+    `;
+
+    document.getElementById("blockResult").innerHTML =
+        blockHTML;
+
+    // BUFFER
+    const buffers = [
+        ["A", "67452301"],
+        ["B", "EFCDAB89"],
+        ["C", "98BADCFE"],
+        ["D", "10325476"]
+    ];
+
+    let bufferHTML = `
+    <table>
+    <tr>
+        <th>Buffer</th>
+        <th>Nilai HEX</th>
+        <th>Ukuran</th>
+    </tr>`;
+
+    buffers.forEach(item => {
+
+        bufferHTML += `
+        <tr>
+            <td>${item[0]}</td>
+            <td>${item[1]}</td>
+            <td>32 bit</td>
+        </tr>`;
+    });
+
+    bufferHTML += `
+    </table>
+    <p>Total buffer: <b>128 bit</b></p>`;
+
+    document.getElementById("bufferResult").innerHTML =
+        bufferHTML;
+
+    // RONDE MD5
+    document.getElementById("roundResult").innerHTML = `
+    <table>
+        <tr><th>Ronde</th><th>Fungsi</th><th>Putaran</th></tr>
+        <tr><td>1</td><td>F</td><td>1 - 16</td></tr>
+        <tr><td>2</td><td>G</td><td>17 - 32</td></tr>
+        <tr><td>3</td><td>H</td><td>33 - 48</td></tr>
+        <tr><td>4</td><td>I</td><td>49 - 64</td></tr>
+    </table>
+
+    <h3>Contoh Perhitungan Putaran Pertama</h3>
+
+    <pre>
+F = (B AND C) OR ((NOT B) AND D)
+
+K[0] = D76AA478
+
+M[0] = ${littleEndianHex(
+        blocks.slice(0, 4).map(
+            b => b.toString(16).padStart(2, "0")
+        ).join("")
+    )}
+
+T = A + F + K[0] + M[0]
+
+Operasi dilakukan modulo 2^32.
+    </pre>
+
+    <p>
+        MD5 menjalankan seluruh 64 putaran
+        melalui proses internal library CryptoJS.
+    </p>
+    `;
+
+}
+
+// RESET
+function resetApp() {
+
+    document.getElementById("inputText").value = "";
+
+    document.getElementById("status").textContent = "";
+
+    document.getElementById("original").textContent = "";
+
+    document.getElementById("hashResult").textContent = "";
+
+    [
+        "asciiResult",
+        "paddingInfo",
+        "paddingResult",
+        "lengthInfo",
+        "lengthResult",
+        "blockInfo",
+        "blockResult",
+        "bufferResult",
+        "roundResult"
+    ].forEach(id => {
+        document.getElementById(id).innerHTML = "";
+    });
+
+}
+
+// COPY
+function copyHash() {
+
+    const hash = document.getElementById("hashResult").textContent;
+
+    if (!/^[a-f0-9]{32}$/.test(hash)) {
+        alert("Silakan generate hash terlebih dahulu.");
+        return;
+    }
+
+    navigator.clipboard.writeText(hash)
+        .then(() => alert("Hash berhasil disalin!"))
+        .catch(() => alert("Gagal menyalin hash."));
+}
+
+// JALANKAN OTOMATIS SAAT HALAMAN DIBUKA
+window.onload = generateMD5;
+
+</script>
+
+</body>
+</html>
